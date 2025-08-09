@@ -238,6 +238,50 @@
             color: #fff;
         }
 
+        /* Booking card visual polish */
+        .booking-card {
+            background: #ffffff;
+            border: 1px solid #eef0f3;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+        .booking-card h3 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .best-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .provider-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 8px 0; }
+        .provider-row + .provider-row { border-top: 1px dashed #eef0f3; }
+        .price-field { width: 130px; border: 1px solid #e9ecef; border-radius: 10px; padding: 8px 10px; }
+        .open-link { background: #f8f9fa; border: 1px solid #e9ecef; color: #667eea; border-radius: 10px; padding: 8px 10px; cursor: pointer; }
+        .open-link:hover { background: #667eea; color: #fff; }
+
+        /* Toast */
+        .toast-container { position: fixed; right: 16px; bottom: 16px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: rgba(51, 65, 85, 0.95); color: #fff; padding: 10px 14px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); transform: translateY(10px); opacity: 0; animation: toastIn .25s ease forwards; }
+        @keyframes toastIn { to { transform: translateY(0); opacity: 1; } }
+
+        /* Back-to-top */
+        #backToTop { position: fixed; right: 18px; bottom: 84px; width: 44px; height: 44px; border-radius: 50%; border: none; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; box-shadow: 0 8px 18px rgba(0,0,0,.2); cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 2500; }
+        #backToTop.show { display: flex; }
+
+        /* Dark mode (override) */
+        .dark-mode body, .dark-mode { background: #0f172a; color: #e5e7eb; }
+        .dark-mode .navbar { background: rgba(15,23,42,0.95) !important; }
+        .dark-mode .booking-card, .dark-mode .modal-content, .dark-mode .tip-card, .dark-mode .overview-card { background: #111827; border-color: #1f2937; color: #e5e7eb; }
+        .dark-mode .provider-row { border-color: #1f2937; }
+        .dark-mode .open-link { background: #0b1220; border-color: #1f2937; color: #93c5fd; }
+        .dark-mode .open-link:hover { background: #2563eb; color: #fff; }
+        .dark-mode .best-badge { background: #064e3b; color: #34d399; }
+        .dark-mode .booking-dot { background: #374151; }
+        .dark-mode .booking-dot.active { background: #60a5fa; }
+
         /* 分頁指示點 */
         .booking-dots {
             display: flex;
@@ -256,6 +300,35 @@
         }
         .booking-dot:hover { transform: scale(1.15); }
         .booking-dot.active { background: #667eea; }
+
+        /* 地圖導航 */
+        .maps-wrapper { display: grid; gap: 18px; }
+        .maps-form { background: #fff; border: 1px solid #eef0f3; border-radius: 16px; padding: 16px; box-shadow: 0 6px 18px rgba(0,0,0,.05); }
+        .maps-form .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .maps-form input { width: 100%; border: 2px solid #e9ecef; border-radius: 12px; padding: 12px 14px; font-size: 1rem; }
+        .maps-form .btn-group { display: flex; gap: 8px; }
+        .maps-form .icon-btn { background: #f8f9fa; border: 1px solid #e9ecef; color: #667eea; border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+        .maps-form .icon-btn:hover { background: #667eea; color: #fff; }
+        .mode-toggle { display: inline-flex; background: #f3f4f6; padding: 4px; border-radius: 999px; gap: 4px; }
+        .mode-toggle button { border: none; background: transparent; padding: 8px 12px; border-radius: 999px; cursor: pointer; color: #374151; }
+        .mode-toggle button.active { background: #667eea; color: #fff; }
+        .maps-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .maps-actions .btn-primary { display: inline-flex; align-items: center; gap: 8px; }
+        .nearby-chip { background: #f8f9fa; border: 1px solid #e9ecef; color: #374151; padding: 8px 12px; border-radius: 999px; cursor: pointer; }
+        .nearby-chip:hover { background: #e5e7eb; }
+        .maps-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+        @media (min-width: 900px) { .maps-grid { grid-template-columns: 1.1fr 1fr; } }
+        .place-card { background: #fff; border: 1px solid #eef0f3; border-radius: 14px; padding: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.05); display: grid; gap: 10px; }
+        .place-card .card-head { display: flex; align-items: center; justify-content: space-between; }
+        .place-card .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #4f46e5; }
+        .place-card .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .place-card .mini-btn { background: #f8f9fa; border: 1px solid #e9ecef; color: #667eea; border-radius: 10px; padding: 8px 10px; cursor: pointer; }
+        .place-card .mini-btn:hover { background: #667eea; color: #fff; }
+        .maps-list { display: grid; gap: 10px; }
+        .maps-empty { text-align: center; color: #6b7280; padding: 16px; }
+        .dark-mode .maps-form, .dark-mode .place-card { background: #111827; border-color: #1f2937; color: #e5e7eb; }
+        .dark-mode .maps-form input { background: #0b1220; border-color: #1f2937; color: #e5e7eb; }
+        .dark-mode .nearby-chip { background: #0b1220; border-color: #1f2937; color: #cbd5e1; }
     </style>
 </head>
 <body>
@@ -277,6 +350,9 @@
             <div class="nav-actions">
                 <button class="search-btn" onclick="showSearchModal()">
                     <i class="fas fa-search"></i>
+                </button>
+                <button class="search-btn" id="darkModeToggle" title="暗黑模式" onclick="toggleDarkMode()">
+                    <i class="fas fa-moon"></i>
                 </button>
                 <div class="hamburger">
                     <span></span>
@@ -369,6 +445,75 @@
         </div>
     </section>
 
+    <!-- 地圖導航 -->
+    <section id="maps" class="section">
+        <div class="container">
+            <h2 class="section-title">🗺️ 地圖導航</h2>
+            <div class="maps-wrapper">
+                <div class="maps-form">
+                    <div class="row">
+                        <input id="mapsFrom" type="text" placeholder="出發地（可留空使用目前位置）">
+                        <div class="btn-group">
+                            <button class="icon-btn" id="useMyLocation" title="使用目前位置"><i class="fas fa-location-crosshairs"></i></button>
+                            <button class="icon-btn" id="swapLocations" title="交換出發/目的地"><i class="fas fa-right-left"></i></button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input id="mapsTo" type="text" placeholder="目的地（例如：心齋橋 / OASIS NANIWA）">
+                        <div class="mode-toggle" role="tablist">
+                            <button class="active" data-mode="driving" title="開車"><i class="fas fa-car"></i></button>
+                            <button data-mode="transit" title="大眾運輸"><i class="fas fa-train-subway"></i></button>
+                            <button data-mode="walking" title="步行"><i class="fas fa-person-walking"></i></button>
+                        </div>
+                    </div>
+                    <div class="maps-actions">
+                        <button class="btn-primary" id="openDirections"><i class="fas fa-route"></i> 開啟導航</button>
+                        <button class="btn-secondary" id="openMapSearch"><i class="fas fa-magnifying-glass-location"></i> 地圖搜尋</button>
+                        <div class="nearby-group">
+                            <span class="nearby-chip" data-query="餐廳">附近餐廳</span>
+                            <span class="nearby-chip" data-query="超市">附近超市</span>
+                            <span class="nearby-chip" data-query="便利商店">便利商店</span>
+                            <span class="nearby-chip" data-query="藥妝店">藥妝店</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="maps-grid">
+                    <div class="maps-list" id="favoritePlaces">
+                        <div class="place-card">
+                            <div class="card-head"><h4>OASIS NANIWA</h4><span class="badge">住宿</span></div>
+                            <div class="card-actions">
+                                <button class="mini-btn" onclick="fillTo('OASIS NANIWA')"><i class="fas fa-location-dot"></i> 設為目的地</button>
+                                <button class="mini-btn" onclick="openGoogleMaps('OASIS NANIWA')"><i class="fas fa-map"></i> 開地圖</button>
+                            </div>
+                        </div>
+                        <div class="place-card">
+                            <div class="card-head"><h4>環球影城（USJ）</h4><span class="badge">景點</span></div>
+                            <div class="card-actions">
+                                <button class="mini-btn" onclick="fillTo('環球影城')"><i class="fas fa-location-dot"></i> 設為目的地</button>
+                                <button class="mini-btn" onclick="openGoogleMaps('環球影城')"><i class="fas fa-map"></i> 開地圖</button>
+                            </div>
+                        </div>
+                        <div class="place-card">
+                            <div class="card-head"><h4>心齋橋</h4><span class="badge">逛街</span></div>
+                            <div class="card-actions">
+                                <button class="mini-btn" onclick="fillTo('心齋橋')"><i class="fas fa-location-dot"></i> 設為目的地</button>
+                                <button class="mini-btn" onclick="openGoogleMaps('心齋橋')"><i class="fas fa-map"></i> 開地圖</button>
+                            </div>
+                        </div>
+                        <div class="maps-empty">可在各行程卡片按「地圖導航」快速加入收藏</div>
+                    </div>
+                    <div class="place-card">
+                        <h4>快速貼上 PDF 地址</h4>
+                        <p style="color:#6b7280">從 `甲胖.pdf` 或其他來源複製地址，貼到目的地欄位，直接開啟導航。</p>
+                        <div class="card-actions">
+                            <button class="mini-btn" onclick="pasteToDestination()"><i class="fas fa-paste"></i> 貼上到目的地</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- 每日行程 -->
     <section id="schedule" class="section">
         <div class="container">
@@ -709,6 +854,8 @@
         </div>
     </div>
 
-    <script src="script_enhanced.js?v=3"></script>
+    <button id="backToTop" title="回到頂部" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="script_enhanced.js?v=4"></script>
 </body>
 </html>

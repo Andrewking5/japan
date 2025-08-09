@@ -155,6 +155,19 @@ const locationDatabase = {
         alternatives: ['天龍寺', '野宮神社', '渡月橋'],
         tips: ['建議清晨前往', '準備好相機', '注意小火車預約']
     },
+    '嵐山よしむら': {
+        type: 'restaurant',
+        title: '嵐山 よしむら（蕎麥）',
+        description: '嵐山人氣蕎麥名店，臨河景觀佳，午餐尖峰常需候位。',
+        details: {
+            '營業時間': '11:00-20:00（依季節調整）',
+            '價格範圍': '¥1,500-2,500/人',
+            '預約': '午餐尖峰建議預約或提早到場',
+            '位置': '嵐山渡月橋周邊'
+        },
+        alternatives: ['天龍寺周邊餐廳', '中村藤吉（嵐山分店，如有）'],
+        tips: ['高峰時段等候較久', '視野佳的座位較熱門', '備好現金以防部分支付限制']
+    },
     '平等院鳳凰堂': {
         type: 'attraction',
         title: '平等院鳳凰堂',
@@ -180,6 +193,19 @@ const locationDatabase = {
         },
         alternatives: ['錦市場', '築地市場', '其他當地市場'],
         tips: ['建議上午前往', '準備好現金', '注意衛生']
+    },
+    '大阪城': {
+        type: 'attraction',
+        title: '大阪城公園／天守閣',
+        description: '大阪代表性景點，周邊公園散步、乘坐園區小火車（ロードトレイン）。',
+        details: {
+            '天守閣門票': '約 ¥600/成人',
+            '小火車': '約 ¥300/人，可坐一圈園區',
+            '最佳時間': '上午或傍晚，避開正午炎熱',
+            '交通': 'JR 大阪環狀線「大阪城公園站」步行可達'
+        },
+        alternatives: ['梅田天空大樓', '阿倍野Harukas', '通天閣'],
+        tips: ['旺季排隊較久', '備水與防曬', '拍照建議廣角鏡頭']
     },
     '臨空城Outlet': {
         type: 'shopping',
@@ -231,7 +257,8 @@ function searchLocations() {
 function showLocationDetail(locationName, type) {
     const location = locationDatabase[locationName];
     if (!location) {
-        alert('找不到該景點資訊');
+        alert('找不到該景點資訊\n\n可能原因：\n- 名稱與資料庫不一致（例如有分店/別名）\n- 目前未收錄此地點\n\n已為你使用 Google 地圖開啟搜尋');
+        openGoogleMaps(locationName);
         return;
     }
     
@@ -508,6 +535,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', () => { buildDots(); updateDots(); });
     bookingListEl.addEventListener('scroll', () => { clearTimeout(window._dotTimer); window._dotTimer = setTimeout(updateDots, 120); });
 
+    // -------- 地圖導航初始化 --------
+    setupMapsUI();
+
     // 滑鼠拖拽（desktop）/ 觸控滑動已原生支援
     let isDown = false; let startX = 0; let scrollLeft = 0;
     bookingListEl.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - bookingListEl.offsetLeft; scrollLeft = bookingListEl.scrollLeft; });
@@ -519,6 +549,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const x = e.pageX - bookingListEl.offsetLeft;
         const walk = (x - startX) * 1.2;
         bookingListEl.scrollLeft = scrollLeft - walk;
+    });
+
+    // Back to top visibility
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) backToTop.classList.add('show'); else backToTop.classList.remove('show');
     });
 });
 
@@ -742,6 +778,7 @@ function openAllLinks(itemId) {
     const item = bookingCatalog.find(i => i.id === itemId);
     if (!item) return;
     item.providers.forEach(p => window.open(p.url, '_blank'));
+    showToast('已開啟所有比價連結');
 }
 
 function formatMoney(value) {
@@ -750,4 +787,104 @@ function formatMoney(value) {
     return Math.round(n).toLocaleString('zh-TW');
 }
 
+// ------ UX helpers ------
+function showToast(message) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = message;
+    container.appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(10px)'; }, 2200);
+    setTimeout(() => { container.removeChild(el); }, 2600);
+}
 
+function toggleDarkMode() {
+    document.documentElement.classList.toggle('dark-mode');
+    const isDark = document.documentElement.classList.contains('dark-mode');
+    localStorage.setItem('prefersDark', isDark ? '1' : '0');
+}
+
+// Apply persisted theme
+(() => {
+    const prefers = localStorage.getItem('prefersDark');
+    if (prefers === '1') document.documentElement.classList.add('dark-mode');
+})();
+
+// ---------------- 地圖導航邏輯 ----------------
+function setupMapsUI() {
+    const fromInput = document.getElementById('mapsFrom');
+    const toInput = document.getElementById('mapsTo');
+    if (!toInput) return; // 若頁面無地圖區塊則略過
+    const modeButtons = document.querySelectorAll('.mode-toggle button');
+    const useMyLocationBtn = document.getElementById('useMyLocation');
+    const swapBtn = document.getElementById('swapLocations');
+    const openDirectionsBtn = document.getElementById('openDirections');
+    const openMapSearchBtn = document.getElementById('openMapSearch');
+    const nearbyChips = document.querySelectorAll('.nearby-chip');
+
+    let currentMode = 'driving';
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            modeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentMode = btn.getAttribute('data-mode');
+        });
+    });
+
+    useMyLocationBtn?.addEventListener('click', () => {
+        if (!navigator.geolocation) { showToast('此瀏覽器不支援定位'); return; }
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            fromInput.value = `${latitude},${longitude}`;
+            showToast('已使用目前位置');
+        }, () => showToast('定位失敗，請確認權限'));
+    });
+
+    swapBtn?.addEventListener('click', () => {
+        const tmp = fromInput.value; fromInput.value = toInput.value; toInput.value = tmp;
+    });
+
+    openDirectionsBtn?.addEventListener('click', () => {
+        const from = fromInput.value.trim();
+        const to = toInput.value.trim();
+        if (!to) { showToast('請先輸入目的地'); return; }
+        const modeMap = { driving: 'driving', transit: 'transit', walking: 'walking' };
+        const mode = modeMap[currentMode] || 'driving';
+        const fromParam = from ? `&origin=${encodeURIComponent(from)}` : '';
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(to)}${fromParam}&travelmode=${mode}`;
+        window.open(url, '_blank');
+    });
+
+    openMapSearchBtn?.addEventListener('click', () => {
+        const to = toInput.value.trim();
+        const q = to || '大阪 日本';
+        const url = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+        window.open(url, '_blank');
+    });
+
+    nearbyChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const q = chip.getAttribute('data-query');
+            const base = toInput.value.trim() || '大阪 日本';
+            const url = `https://www.google.com/maps/search/${encodeURIComponent(q + ' near ' + base)}`;
+            window.open(url, '_blank');
+        });
+    });
+}
+
+function fillTo(text) {
+    const toInput = document.getElementById('mapsTo');
+    if (!toInput) return;
+    toInput.value = text;
+    showToast(`已設為目的地：${text}`);
+}
+
+async function pasteToDestination() {
+    try {
+        const text = await navigator.clipboard.readText();
+        fillTo(text);
+    } catch (e) {
+        showToast('無法讀取剪貼簿，請手動貼上');
+    }
+}
