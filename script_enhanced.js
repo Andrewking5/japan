@@ -219,8 +219,81 @@ const locationDatabase = {
         },
         alternatives: ['三井Outlet', '其他Outlet'],
         tips: ['建議預留2-3小時', '準備好退稅文件', '注意機場時間']
+    },
+    '京都鐵板燒': {
+        type: 'restaurant',
+        title: '京都 鐵板燒（河原町周邊）',
+        description: '河原町周邊多家鐵板燒餐廳，可依評分與預算選擇。',
+        details: {
+            '預約': '建議 2–3 週前預約',
+            '用餐時間': '約 60–90 分',
+            '周邊': '步行可達四条河原町商圈'
+        },
+        alternatives: ['Tsurukame Hon Ten', '其他牛排/鐵板燒店'],
+        tips: ['熱門店家座位有限，請提前規劃']
+    },
+    '嵯峨野トロッコ列車': {
+        type: 'attraction',
+        title: '嵯峨野觀光鐵道（小火車）',
+        description: '穿越保津川溪谷的觀光小火車，旺季熱門須預約。',
+        details: {
+            '官網': 'https://www.sagano-kanko.co.jp/',
+            '票價': '單程約 ¥880 起（依座席與區間）',
+            '上車站': 'トロッコ嵯峨、トロッコ嵐山、トロッコ亀岡',
+            '建議': '去程搭車、回程可散步或搭JR回嵯峨嵐山'
+        },
+        alternatives: ['保津川遊船', '嵐山竹林步行'],
+        tips: ['尖峰季節請提前搶票', '遇雨天視情況停駛']
     }
 };
+
+// 精確地點覆寫：特定名稱 → 正確店名 / 座標 / 連結
+const locationOverrides = {
+    '貴桑桑燒肉': {
+        placeName: '焼肉 鬼に金棒 梅田 茶屋町店',
+        lat: 34.7076506,
+        lng: 135.498694,
+        placeUrl: 'https://www.google.com/maps/place/%E7%84%BC%E8%82%89+%E9%AC%BC%E3%81%AB%E9%87%91%E6%A3%92+%E6%A2%85%E7%94%B0+%E8%8C%B6%E5%B1%8B%E7%94%BA%E5%BA%97/@34.7069044,135.4955158,17z/data=!4m10!1m2!2m1!1z44Ob44Or44Oi44Oz6YWS5aC044CA6ay844Gr6YeR5qOS44CA5qKF55Sw44CA6Iqd55Sw5bqX!3m6!1s0x6000e73eb39f0de1:0x6f79321e6783974c!8m2!3d34.7076506!4d135.498694!15sCjbjg5vjg6vjg6Ljg7PphZLloLTjgIDprLzjgavph5Hmo5LjgIDmooXnlLDjgIDoip3nlLDlupdaNiI044Ob44Or44Oi44OzIOmFkuWgtCDprLwg44GrIOmHkeajkiDmooXnlLAg6Iqd55SwIOW6l5IBE3lha2luaWt1X3Jlc3RhdXJhbnSqAaYBCg0vZy8xMXN4d3RmdGtfEAEqOCI044Ob44Or44Oi44OzIOmFkuWgtCDprLwg44GrIOmHkeajkiDmooXnlLAg6Iqd55SwIOW6lygIMh8QASIbSFbsXvHuvMgh3rgD5ezU_yyLppjRXhTF8Sf6MjgQAiI044Ob44Or44Oi44OzIOmFkuWgtCDprLwg44GrIOmHkeajkiDmooXnlLAg6Iqd55SwIOW6l-ABAA!16s%2Fg%2F11sj7xmwds?entry=ttu&g_ep=EgoyMDI1MDgwNi4wIKXMDSoASAFQAw%3D%3D'
+    },
+    // 核心地點（機場 / 車站 / 標誌性景點）
+    '關西機場': { lat: 34.4359, lng: 135.2433, placeUrl: 'https://www.google.com/maps/place/Kansai+International+Airport' },
+    '新今宮站': { lat: 34.6475, lng: 135.5029, placeUrl: 'https://www.google.com/maps/place/Shin-Imamiya+Station' },
+    '環球影城': { lat: 34.665442, lng: 135.432338, placeUrl: 'https://www.google.com/maps/place/Universal+Studios+Japan' },
+    '大丸梅田店寶可夢任天堂': { lat: 34.7023, lng: 135.4962, placeUrl: 'https://www.google.com/maps/place/DAIMARU+UMEDA' },
+    '梅田天空大樓': { lat: 34.7055, lng: 135.4899, placeUrl: 'https://www.google.com/maps/place/Umeda+Sky+Building' },
+    '心齋橋': { lat: 34.6739, lng: 135.5012, placeUrl: 'https://www.google.com/maps/place/Shinsaibashi' },
+    '道頓堀': { lat: 34.6687, lng: 135.5019, placeUrl: 'https://www.google.com/maps/place/Dotonbori' },
+    '美國村': { lat: 34.6726, lng: 135.4989, placeUrl: 'https://www.google.com/maps/place/Amerikamura' },
+    '通天閣': { lat: 34.6525, lng: 135.5060, placeUrl: 'https://www.google.com/maps/place/Tsutenkaku' },
+    '伏見稻荷大社': { lat: 34.96714, lng: 135.77267, placeUrl: 'https://www.google.com/maps/place/Fushimi+Inari+Taisha' },
+    '清水寺': { lat: 34.994856, lng: 135.785046, placeUrl: 'https://www.google.com/maps/place/Kiyomizu-dera' },
+    '錦市場': { lat: 35.0054, lng: 135.7641, placeUrl: 'https://www.google.com/maps/place/Nishiki+Market' },
+    '嵐山竹林小徑': { lat: 35.0094, lng: 135.6675, placeUrl: 'https://www.google.com/maps/place/Arashiyama+Bamboo+Grove' },
+    '嵐山よしむら': { lat: 35.01135, lng: 135.67745, placeUrl: 'https://www.google.com/maps/place/%E5%B5%90%E5%B1%B1+%E3%82%88%E3%81%97%E3%82%80%E3%82%89' },
+    '京都車站': { lat: 34.985849, lng: 135.758766, placeUrl: 'https://www.google.com/maps/place/Kyoto+Station' },
+    '平等院鳳凰堂': { lat: 34.8891, lng: 135.8075, placeUrl: 'https://www.google.com/maps/place/Byodoin' },
+    '宇治商店街': { lat: 34.8912, lng: 135.8079, placeUrl: 'https://www.google.com/maps/place/Uji+bashi+dori' },
+    '通圓茶舖': { lat: 34.8918, lng: 135.8066, placeUrl: 'https://www.google.com/maps/search/%E9%80%9A%E5%9C%93%E8%8C%B6%E8%88%97' },
+    '中村藤吉': { lat: 34.8907, lng: 135.8079, placeUrl: 'https://www.google.com/maps/place/Nakamura+Tokichi+Honten' },
+    '伊藤久右衛門': { lat: 34.8919, lng: 135.8057, placeUrl: 'https://www.google.com/maps/place/Itohkyuemon' },
+    '宇治神社': { lat: 34.8993, lng: 135.8116, placeUrl: 'https://www.google.com/maps/place/Uji+Shrine' },
+    '宇治上神社': { lat: 34.9005, lng: 135.8121, placeUrl: 'https://www.google.com/maps/place/Ujigami+Shrine' },
+    '宇治川': { lat: 34.8898, lng: 135.8078, placeUrl: 'https://www.google.com/maps/place/Uji+River' },
+    '黑門市場': { lat: 34.6654, lng: 135.5061, placeUrl: 'https://www.google.com/maps/place/Kuromon+Ichiba+Market' },
+    '大阪城': { lat: 34.6873, lng: 135.5262, placeUrl: 'https://www.google.com/maps/place/Osaka+Castle' },
+    '臨空城Outlet': { lat: 34.4040, lng: 135.3015, placeUrl: 'https://www.google.com/maps/place/Rinku+Premium+Outlets' },
+    'しゃぶしゃぶ豚々': { placeUrl: 'https://www.google.com/maps/search/%E3%81%97%E3%82%83%E3%81%B6%E3%81%97%E3%82%83%E3%81%B6%E8%B1%9A%E3%80%85' },
+    'Gram 厚鬆餅': { placeUrl: 'https://www.google.com/maps/search/Gram+Pancakes+%E5%BF%83%E9%BD%8B%E6%A9%8B' }
+};
+
+function getLocationOverride(text) {
+    if (!text) return null;
+    if (locationOverrides[text]) return locationOverrides[text];
+    for (const key in locationOverrides) {
+        if (locationOverrides[key].placeName === text) return locationOverrides[key];
+    }
+    return null;
+}
 
 // 搜尋功能
 function searchLocations() {
@@ -254,7 +327,7 @@ function searchLocations() {
 }
 
 // 顯示景點詳情
-function showLocationDetail(locationName, type) {
+function showLocationDetail(locationName, type, contextBtn) {
     const location = locationDatabase[locationName];
     if (!location) {
         alert('找不到該景點資訊\n\n可能原因：\n- 名稱與資料庫不一致（例如有分店/別名）\n- 目前未收錄此地點\n\n已為你使用 Google 地圖開啟搜尋');
@@ -280,7 +353,7 @@ function showLocationDetail(locationName, type) {
         `<li>${tip}</li>`
     ).join('');
     
-    content.innerHTML = `
+    let html = `
         <div class="location-detail">
             <div class="location-info">
                 <h3>景點介紹</h3>
@@ -316,6 +389,29 @@ function showLocationDetail(locationName, type) {
             </div>
         </div>
     `;
+
+    // 若由時間軸按鈕觸發，附帶當列的交通/備註資訊
+    if (contextBtn) {
+        const slot = contextBtn.closest('.time-slot');
+        if (slot) {
+            const transport = slot.querySelector('.transport')?.textContent?.trim();
+            const note = slot.querySelector('.note')?.textContent?.trim();
+            const backup = slot.querySelector('.backup')?.textContent?.trim();
+            const important = slot.querySelector('.important')?.textContent?.trim();
+            const price = slot.querySelector('.price')?.textContent?.trim();
+            const items = [];
+            if (transport) items.push(`<li><strong>行程路線:</strong> ${transport}</li>`);
+            if (note) items.push(`<li><strong>備註:</strong> ${note}</li>`);
+            if (backup) items.push(`<li><strong>備案:</strong> ${backup}</li>`);
+            if (important) items.push(`<li><strong>重要提醒:</strong> ${important}</li>`);
+            if (price) items.push(`<li><strong>費用資訊:</strong> ${price}</li>`);
+            if (items.length) {
+                html += `<div class="location-meta"><h4>行程資訊</h4><ul>${items.join('')}</ul></div>`;
+            }
+        }
+    }
+
+    content.innerHTML = html;
     
     modal.style.display = 'block';
 }
@@ -362,6 +458,11 @@ function filterSchedule(category) {
 
 // 地圖導航
 function openGoogleMaps(locationName) {
+    const override = getLocationOverride(locationName);
+    if (override?.placeUrl) {
+        window.open(override.placeUrl, '_blank');
+        return;
+    }
     const searchQuery = encodeURIComponent(locationName + ' 日本');
     window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
 }
@@ -372,9 +473,10 @@ function addToFavorites(locationName) {
     if (!favorites.includes(locationName)) {
         favorites.push(locationName);
         localStorage.setItem('tripFavorites', JSON.stringify(favorites));
-        alert('已加入收藏！');
+        renderFavoriteItem(locationName);
+        showToast('已加入收藏');
     } else {
-        alert('已在收藏清單中！');
+        showToast('已在收藏清單中');
     }
 }
 
@@ -556,6 +658,26 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', () => {
         if (window.scrollY > 400) backToTop.classList.add('show'); else backToTop.classList.remove('show');
     });
+
+    // 自動為有詳情按鈕但缺少 quick-actions 的時間列新增「設為目的地／加入收藏」
+    try {
+        document.querySelectorAll('.timeline .time-slot').forEach(slot => {
+            if (slot.querySelector('.quick-actions')) return;
+            const btn = slot.querySelector('.detail-btn');
+            if (!btn) return;
+            const onclick = btn.getAttribute('onclick') || '';
+            const match = onclick.match(/showLocationDetail\('\s*([^']+?)\s*'/);
+            const name = match ? match[1] : (slot.querySelector('.activity')?.textContent?.trim() || '');
+            if (!name) return;
+            const group = document.createElement('span');
+            group.className = 'quick-actions';
+            group.innerHTML = `
+                <button class="icon-btn-sm" onclick="fillTo('${name.replace(/'/g, "\\'")}')" title="設為目的地"><i class="fas fa-location-dot"></i></button>
+                <button class="icon-btn-sm" onclick="addToFavorites('${name.replace(/'/g, "\\'")}')" title="加入收藏"><i class="fas fa-heart"></i></button>
+            `;
+            slot.appendChild(group);
+        });
+    } catch (_) {}
 });
 
 // ---------------- 預約比價功能 ----------------
@@ -669,6 +791,27 @@ const bookingCatalog = [
             { id: 'official', name: '官方資訊', currency: 'JPY', url: 'https://www.osakacastle.net/' },
             { id: 'klook', name: 'Klook', currency: 'TWD', url: 'https://www.klook.com/zh-TW/search/?query=%E5%A4%A7%E9%98%AA%E5%9F%8E%20%E9%96%80%E7%A5%A8' },
             { id: 'kkday', name: 'KKday', currency: 'TWD', url: 'https://www.kkday.com/zh-tw/product/search?keyword=%E5%A4%A7%E9%98%AA%E5%9F%8E%20%E9%96%80%E7%A5%A8' }
+        ]
+    },
+    {
+        id: 'osaka-metro-1day',
+        title: 'Osaka Metro 一日券（Enjoy Eco Card）',
+        note: '平日/週末票價不同；地鐵與市內巴士無限次搭乘',
+        providers: [
+            { id: 'official', name: 'Osaka Metro 官方', currency: 'JPY', url: 'https://subway.osakametro.co.jp/' },
+            { id: 'klook', name: 'Klook', currency: 'TWD', url: 'https://www.klook.com/zh-TW/search/?query=Osaka%20Metro%20%E4%B8%80%E6%97%A5%E5%88%B8' },
+            { id: 'kkday', name: 'KKday', currency: 'TWD', url: 'https://www.kkday.com/zh-tw/product/search?keyword=Osaka%20Metro%20%E4%B8%80%E6%97%A5%E5%88%B8' }
+        ]
+    },
+    {
+        id: 'nankai-airport',
+        title: '南海電鐵 機場線（KIX↔難波/新今宮）',
+        note: 'Rapi:t 需另購特急券；一般急行較省；可與其他票券搭配',
+        providers: [
+            { id: 'nankai-ticket', name: '南海 官方 票券', currency: 'JPY', url: 'https://www.howto-osaka.com/zh-hant/ticket/ticket/' },
+            { id: 'nankai-rapit', name: '南海 Rapi:t 官方', currency: 'JPY', url: 'https://www.howto-osaka.com/zh-hant/rapit/' },
+            { id: 'klook', name: 'Klook', currency: 'TWD', url: 'https://www.klook.com/zh-TW/search/?query=%E5%8D%97%E6%B5%B7%20%E6%A9%9F%E5%A0%B4%20%E7%B7%9A' },
+            { id: 'kkday', name: 'KKday', currency: 'TWD', url: 'https://www.kkday.com/zh-tw/product/search?keyword=%E5%8D%97%E6%B5%B7%20%E6%A9%9F%E5%A0%B4%20%E7%B7%9A' }
         ]
     }
 ];
@@ -822,6 +965,15 @@ function setupMapsUI() {
     const openDirectionsBtn = document.getElementById('openDirections');
     const openMapSearchBtn = document.getElementById('openMapSearch');
     const nearbyChips = document.querySelectorAll('.nearby-chip');
+    const quickLinkInput = document.getElementById('quickLinkInput');
+    const addQuickLinkBtn = document.getElementById('addQuickLinkBtn');
+    const quickLinks = document.getElementById('quickLinks');
+    const mapPreview = document.getElementById('mapPreview');
+    const mapZoom = document.getElementById('mapZoom');
+    const mapZoomIn = document.getElementById('mapZoomIn');
+    const mapZoomOut = document.getElementById('mapZoomOut');
+    const mapFullscreenBtn = document.getElementById('mapFullscreen');
+    const mapPreviewContainer = document.getElementById('mapPreviewContainer');
 
     let currentMode = 'driving';
     modeButtons.forEach(btn => {
@@ -852,15 +1004,26 @@ function setupMapsUI() {
         const modeMap = { driving: 'driving', transit: 'transit', walking: 'walking' };
         const mode = modeMap[currentMode] || 'driving';
         const fromParam = from ? `&origin=${encodeURIComponent(from)}` : '';
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(to)}${fromParam}&travelmode=${mode}`;
+
+        // 若目的地有覆寫，改用座標作為導航目的地更精準
+        const ov = getLocationOverride(to);
+        const destParam = ov?.lat && ov?.lng ? `${ov.lat},${ov.lng}` : to;
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destParam)}${fromParam}&travelmode=${mode}`;
         window.open(url, '_blank');
+        if (mapPreview) {
+            if (ov?.lat && ov?.lng) {
+                mapPreview.src = `https://www.google.com/maps?q=${ov.lat},${ov.lng}&output=embed`;
+            } else {
+                mapPreview.src = `https://www.google.com/maps?q=${encodeURIComponent(to + ' 日本')}&output=embed`;
+            }
+        }
     });
 
     openMapSearchBtn?.addEventListener('click', () => {
         const to = toInput.value.trim();
         const q = to || '大阪 日本';
-        const url = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
-        window.open(url, '_blank');
+        if (mapPreview) mapPreview.src = `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`;
+        else window.open(`https://www.google.com/maps/search/${encodeURIComponent(q)}`, '_blank');
     });
 
     nearbyChips.forEach(chip => {
@@ -871,12 +1034,61 @@ function setupMapsUI() {
             window.open(url, '_blank');
         });
     });
+
+    // 常用連結
+    addQuickLinkBtn?.addEventListener('click', () => {
+        const url = (quickLinkInput.value || '').trim();
+        if (!url) { showToast('請輸入網址'); return; }
+        addQuickLink(url);
+        quickLinkInput.value = '';
+    });
+    renderQuickLinks();
+
+    // 地圖縮放控制（以 embed 的 zoom 參數重載）
+    function updateEmbedZoom() {
+        if (!mapPreview) return;
+        // 解析目前的 src，把 zoom 參數換掉；若無則追加
+        try {
+            const url = new URL(mapPreview.src);
+            // 當使用 q= 形式時，多數情況 zoom 需透過 &z= 參數（部分版本不支援）。
+            url.searchParams.set('z', mapZoom.value);
+            mapPreview.src = url.toString();
+        } catch (_) {
+            // 失敗則以 q + output=embed + z 拼接簡單替代
+            const fallback = mapPreview.src.split('&z=')[0] + `&z=${mapZoom.value}`;
+            mapPreview.src = fallback;
+        }
+    }
+    mapZoom?.addEventListener('input', updateEmbedZoom);
+    mapZoomIn?.addEventListener('click', () => {
+        if (!mapZoom) return;
+        mapZoom.value = String(Math.min(20, Number(mapZoom.value || 14) + 1));
+        updateEmbedZoom();
+    });
+    mapZoomOut?.addEventListener('click', () => {
+        if (!mapZoom) return;
+        mapZoom.value = String(Math.max(10, Number(mapZoom.value || 14) - 1));
+        updateEmbedZoom();
+    });
+    mapFullscreenBtn?.addEventListener('click', () => {
+        if (!mapPreviewContainer) return;
+        mapPreviewContainer.classList.toggle('fullscreen');
+    });
 }
 
 function fillTo(text) {
     const toInput = document.getElementById('mapsTo');
+    const mapPreview = document.getElementById('mapPreview');
     if (!toInput) return;
-    toInput.value = text;
+    const ov = getLocationOverride(text);
+    toInput.value = ov?.placeName || text;
+    if (mapPreview) {
+        if (ov?.lat && ov?.lng) {
+            mapPreview.src = `https://www.google.com/maps?q=${ov.lat},${ov.lng}&output=embed`;
+        } else {
+            mapPreview.src = `https://www.google.com/maps?q=${encodeURIComponent((ov?.placeName || text) + ' 日本')}&output=embed`;
+        }
+    }
     showToast(`已設為目的地：${text}`);
 }
 
@@ -887,4 +1099,92 @@ async function pasteToDestination() {
     } catch (e) {
         showToast('無法讀取剪貼簿，請手動貼上');
     }
+}
+
+// ------- 收藏清單渲染 -------
+function slugify(name) {
+    return 'fav-' + name.replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+}
+
+function renderFavoriteItem(name) {
+    const list = document.getElementById('favoritePlaces');
+    if (!list) return;
+    const id = slugify(name);
+    if (document.getElementById(id)) return; // 已存在就不重複建立
+
+    const badge = (locationDatabase[name]?.type === 'restaurant') ? '美食' :
+                  (locationDatabase[name]?.type === 'attraction') ? '景點' :
+                  (locationDatabase[name]?.type === 'shopping') ? '逛街' : '收藏';
+
+    const card = document.createElement('div');
+    card.className = 'place-card';
+    card.id = id;
+    card.innerHTML = `
+        <div class="card-head"><h4>${name}</h4><span class="badge">${badge}</span></div>
+        <div class="card-actions">
+            <button class="mini-btn" onclick="fillTo('${name.replace(/'/g, "\\'")}')"><i class="fas fa-location-dot"></i> 設為目的地</button>
+            <button class="mini-btn" onclick="openGoogleMaps('${name.replace(/'/g, "\\'")}')"><i class="fas fa-map"></i> 開地圖</button>
+            <button class="mini-btn" onclick="removeFavorite('${name.replace(/'/g, "\\'")}')"><i class="fas fa-xmark"></i> 移除收藏</button>
+        </div>
+    `;
+    list.appendChild(card);
+
+    const empty = document.querySelector('.maps-empty');
+    if (empty) empty.style.display = 'none';
+}
+
+function renderFavoritesFromStorage() {
+    const favorites = JSON.parse(localStorage.getItem('tripFavorites') || '[]');
+    if (favorites.length === 0) return;
+    favorites.forEach(renderFavoriteItem);
+}
+
+function removeFavorite(name) {
+    const favorites = JSON.parse(localStorage.getItem('tripFavorites') || '[]');
+    const next = favorites.filter(n => n !== name);
+    localStorage.setItem('tripFavorites', JSON.stringify(next));
+    const el = document.getElementById(slugify(name));
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+    const empty = document.querySelector('.maps-empty');
+    if (empty && next.length === 0) empty.style.display = '';
+    showToast('已移除收藏');
+}
+
+// 初始載入收藏 UI
+document.addEventListener('DOMContentLoaded', renderFavoritesFromStorage);
+
+// ------- 常用連結（URL 快捷） -------
+function getQuickLinks() {
+    return JSON.parse(localStorage.getItem('tripQuickLinks') || '[]');
+}
+function setQuickLinks(list) {
+    localStorage.setItem('tripQuickLinks', JSON.stringify(list));
+}
+function renderQuickLinks() {
+    const container = document.getElementById('quickLinks');
+    if (!container) return;
+    const links = getQuickLinks();
+    container.innerHTML = links.map(url => `
+        <span class="nearby-chip" title="${url}">
+            <a href="${url}" target="_blank" style="text-decoration:none;color:inherit"><i class="fas fa-link"></i> 連結</a>
+            <button class="icon-btn-sm" style="margin-left:6px" onclick="removeQuickLink('${url.replace(/'/g, "\\'")}')"><i class="fas fa-xmark"></i></button>
+        </span>
+    `).join('');
+}
+function addQuickLink(url) {
+    const links = getQuickLinks();
+    if (!links.includes(url)) {
+        links.push(url);
+        setQuickLinks(links);
+        renderQuickLinks();
+        showToast('已加入連結');
+    } else {
+        showToast('連結已存在');
+    }
+}
+function removeQuickLink(url) {
+    const links = getQuickLinks().filter(u => u !== url);
+    setQuickLinks(links);
+    renderQuickLinks();
+    showToast('已移除連結');
 }

@@ -326,9 +326,25 @@
         .place-card .mini-btn:hover { background: #667eea; color: #fff; }
         .maps-list { display: grid; gap: 10px; }
         .maps-empty { text-align: center; color: #6b7280; padding: 16px; }
+        .map-preview { width: 100%; height: 360px; border: 1px solid #eef0f3; border-radius: 14px; overflow: auto; background: #f8f9fa; resize: vertical; min-height: 240px; max-height: 720px; }
+        .map-preview iframe { width: 100%; height: 100%; border: 0; }
+        .map-controls { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+        .map-controls input[type="range"] { width: 160px; }
+        .map-controls .mini-btn { padding: 6px 10px; }
+        .map-preview.fullscreen { position: fixed; left: 16px; right: 16px; top: 70px; bottom: 16px; height: auto; z-index: 4500; box-shadow: 0 20px 40px rgba(0,0,0,.25); border-radius: 12px; }
         .dark-mode .maps-form, .dark-mode .place-card { background: #111827; border-color: #1f2937; color: #e5e7eb; }
         .dark-mode .maps-form input { background: #0b1220; border-color: #1f2937; color: #e5e7eb; }
         .dark-mode .nearby-chip { background: #0b1220; border-color: #1f2937; color: #cbd5e1; }
+
+        /* 全站 UX 強化 */
+        .navbar { position: sticky; top: 0; z-index: 3000; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        body { scroll-behavior: smooth; }
+        .focus-ring:focus { outline: 3px solid rgba(102,126,234,0.5); outline-offset: 2px; }
+        .icon-btn-sm { background: #f8f9fa; border: 1px solid #e9ecef; color: #667eea; padding: 6px 8px; border-radius: 8px; cursor: pointer; }
+        .icon-btn-sm:hover { background: #667eea; color: #fff; }
+        .time-slot .quick-actions { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: middle; }
+        .time-slot .quick-actions .icon-btn-sm { transform: translateY(-2px); }
+        .dark-mode .icon-btn-sm { background: #0b1220; border-color: #1f2937; color: #93c5fd; }
     </style>
 </head>
 <body>
@@ -343,7 +359,6 @@
                 <li><a href="#overview" class="nav-link">行程概覽</a></li>
                 <li><a href="#schedule" class="nav-link">每日行程</a></li>
                 <li><a href="#bookings" class="nav-link">預定清單</a></li>
-                <li><a href="#budget" class="nav-link">預算追蹤</a></li>
                 <li><a href="#maps" class="nav-link">地圖導航</a></li>
                 <li><a href="#tips" class="nav-link">實用提醒</a></li>
             </ul>
@@ -422,7 +437,7 @@
                         <i class="fas fa-train"></i>
                     </div>
                     <h3>交通規劃</h3>
-                    <p>JR關西周遊券<br>西瓜卡 + 地鐵</p>
+                    <p>IC卡（ICOCA）<br>Osaka Metro 一日券（部分日）</p>
                     <span class="status pending">待預定</span>
                 </div>
                 <div class="overview-card">
@@ -504,11 +519,27 @@
                         <div class="maps-empty">可在各行程卡片按「地圖導航」快速加入收藏</div>
                     </div>
                     <div class="place-card">
-                        <h4>快速貼上 PDF 地址</h4>
-                        <p style="color:#6b7280">從 `甲胖.pdf` 或其他來源複製地址，貼到目的地欄位，直接開啟導航。</p>
-                        <div class="card-actions">
+                        <h4>Google 地圖預覽</h4>
+                        <div class="map-controls">
+                            <label for="mapZoom" style="color:#6b7280">縮放</label>
+                            <input id="mapZoom" type="range" min="10" max="20" step="1" value="14">
+                            <button class="mini-btn" id="mapZoomOut">-</button>
+                            <button class="mini-btn" id="mapZoomIn">+</button>
+                            <button class="mini-btn" id="mapFullscreen">全螢幕</button>
+                        </div>
+                        <div class="map-preview" id="mapPreviewContainer">
+                            <iframe id="mapPreview" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=%E5%A4%A7%E9%98%AA%20%E6%97%A5%E6%9C%AC&output=embed"></iframe>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <h4>快速貼上 PDF 地址 / 常用連結</h4>
+                        <p style="color:#6b7280">將網址貼到下方欄位，加入後可一鍵「開啟」或「填入目的地」。</p>
+                        <div class="card-actions" style="gap:8px; align-items:center; flex-wrap:wrap;">
+                            <input id="quickLinkInput" class="focus-ring" type="text" placeholder="貼上或輸入網址，如 https://www.cafe-gram.com/hongkong/" style="flex:1; min-width:260px; border:2px solid #e9ecef; border-radius:10px; padding:10px 12px;">
+                            <button class="mini-btn" id="addQuickLinkBtn"><i class="fas fa-plus"></i> 加入連結</button>
                             <button class="mini-btn" onclick="pasteToDestination()"><i class="fas fa-paste"></i> 貼上到目的地</button>
                         </div>
+                        <div id="quickLinks" class="quick-links" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
                     </div>
                 </div>
             </div>
@@ -527,26 +558,33 @@
                             <div class="time-slot">
                                 <span class="time">10:25</span>
                                 <span class="activity">抵達關西機場</span>
-                                <button class="detail-btn" onclick="showLocationDetail('關西機場', 'airport')">
+                                <button class="detail-btn" onclick="showLocationDetail('關西機場', 'airport', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
+                                <span class="quick-actions">
+                                    <button class="icon-btn-sm" onclick="fillTo('關西機場')" title="設為目的地"><i class="fas fa-location-dot"></i></button>
+                                    <button class="icon-btn-sm" onclick="addToFavorites('關西機場')" title="加入收藏"><i class="fas fa-heart"></i></button>
+                                </span>
                             </div>
                             <div class="time-slot">
                                 <span class="time">11:30</span>
-                                <span class="activity">出關 → 搭乘HARUKA到大阪車站</span>
+                                <span class="activity">出關 → 搭乘南海特急 關西機場→新今宮（約¥1,500）</span>
                             </div>
                             <div class="time-slot">
-                                <span class="time">13:10</span>
-                                <span class="activity">香料牛逼特色嘎李</span>
-                                <span class="backup">備選：烏龍麵 (現場排到15:30)</span>
-                                <button class="detail-btn" onclick="showLocationDetail('香料牛逼特色嘎李', 'restaurant')">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
+                                <span class="time">13:00</span>
+                                <span class="activity">抵達新今宮 → 寄放行李（約¥800）</span>
                             </div>
                             <div class="time-slot">
                                 <span class="time">15:30</span>
                                 <span class="activity">大丸梅田店寶可夢任天堂</span>
-                                <button class="detail-btn" onclick="showLocationDetail('大丸梅田店寶可夢任天堂', 'shopping')">
+                                <button class="detail-btn" onclick="showLocationDetail('大丸梅田店寶可夢任天堂', 'shopping', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">16:30</span>
+                                <span class="activity">道頓堀／美國村／天王寺公園（通天閣）擇一</span>
+                                <button class="detail-btn" onclick="showLocationDetail('通天閣', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -554,15 +592,26 @@
                                 <span class="time">18:00</span>
                                 <span class="activity">大阪梅田貴桑桑燒肉</span>
                                 <span class="note">7月預定，步行約7-10分鐘</span>
-                                <button class="detail-btn" onclick="showLocationDetail('貴桑桑燒肉', 'restaurant')">
+                                <button class="detail-btn" onclick="showLocationDetail('貴桑桑燒肉', 'restaurant', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
+                                <span class="quick-actions">
+                                    <button class="icon-btn-sm" onclick="fillTo('貴桑桑燒肉')" title="設為目的地"><i class="fas fa-location-dot"></i></button>
+                                    <button class="icon-btn-sm" onclick="addToFavorites('貴桑桑燒肉')" title="加入收藏"><i class="fas fa-heart"></i></button>
+                                </span>
                             </div>
                             <div class="time-slot">
                                 <span class="time">20:00</span>
                                 <span class="activity">梅田天空嚇死人大樓</span>
                                 <span class="note">從大阪站中央北口步行約7分鐘</span>
-                                <button class="detail-btn" onclick="showLocationDetail('梅田天空大樓', 'attraction')">
+                                <button class="detail-btn" onclick="showLocationDetail('梅田天空大樓', 'attraction', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">22:00</span>
+                                <span class="activity">通天閣滑梯（備選，視體力）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('通天閣', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -579,9 +628,13 @@
                                 <span class="time">09:00</span>
                                 <span class="activity">抵達環球影城</span>
                                 <span class="transport">堺筋線天下茶屋→動物園前→大阪環狀線新今宮→西九條→JR夢咲線→環球城</span>
-                                <button class="detail-btn" onclick="showLocationDetail('環球影城', 'attraction')">
+                                <button class="detail-btn" onclick="showLocationDetail('環球影城', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
+                                <span class="quick-actions">
+                                    <button class="icon-btn-sm" onclick="fillTo('環球影城')" title="設為目的地"><i class="fas fa-location-dot"></i></button>
+                                    <button class="icon-btn-sm" onclick="addToFavorites('環球影城')" title="加入收藏"><i class="fas fa-heart"></i></button>
+                                </span>
                             </div>
                             <div class="time-slot">
                                 <span class="time">19:00</span>
@@ -592,14 +645,14 @@
                                 <span class="time">19:30</span>
                                 <span class="activity">烏龍麵棒大阪店</span>
                                 <span class="backup">備案：大阪燒 (開到21:00)</span>
-                                <button class="detail-btn" onclick="showLocationDetail('烏龍麵棒大阪店', 'restaurant')">
+                                <button class="detail-btn" onclick="showLocationDetail('烏龍麵棒大阪店', 'restaurant', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
                             <div class="time-slot">
                                 <span class="time">21:00</span>
                                 <span class="activity">心齋橋逛街</span>
-                                <button class="detail-btn" onclick="showLocationDetail('心齋橋', 'shopping')">
+                                <button class="detail-btn" onclick="showLocationDetail('心齋橋', 'shopping', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -619,14 +672,21 @@
                             <div class="time-slot">
                                 <span class="time">08:30</span>
                                 <span class="activity">伏見稻荷大社</span>
-                                <button class="detail-btn" onclick="showLocationDetail('伏見稻荷大社', 'attraction')">
+                                <button class="detail-btn" onclick="showLocationDetail('伏見稻荷大社', 'attraction', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">11:00</span>
+                                <span class="activity">京都車站內 天婦羅（午餐）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('京都車站', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
                             <div class="time-slot">
                                 <span class="time">12:00</span>
                                 <span class="activity">清水寺</span>
-                                <button class="detail-btn" onclick="showLocationDetail('清水寺', 'attraction')">
+                                <button class="detail-btn" onclick="showLocationDetail('清水寺', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -635,7 +695,14 @@
                                 <span class="activity">錦市場</span>
                                 <span class="important">現金需要</span>
                                 <span class="transport">清水寺→祇園四条站→阪急烏丸站→步行5分鐘</span>
-                                <button class="detail-btn" onclick="showLocationDetail('錦市場', 'shopping')">
+                                <button class="detail-btn" onclick="showLocationDetail('錦市場', 'shopping', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">18:00</span>
+                                <span class="activity">晚餐：京都鐵板燒 / Tsurukame Hon Ten（河原町）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('京都鐵板燒', 'restaurant', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -649,19 +716,39 @@
                         <h3>嵐山竹林</h3>
                         <div class="schedule-details">
                             <div class="time-slot">
+                                <span class="time">09:00</span>
+                                <span class="activity">出發前往嵐山</span>
+                                <span class="transport">JR：新今宮→（大阪/天王寺 轉乘）→ 嵯峨嵐山站；或 阪急：梅田→嵐山（步行至竹林）</span>
+                            </div>
+                            <div class="time-slot">
                                 <span class="time">10:35</span>
                                 <span class="activity">竹林小徑、野宮神社</span>
                                 <span class="important">要搭小火車需預約 (嵯峨野トロッコ列車)</span>
-                                <button class="detail-btn" onclick="showLocationDetail('嵐山竹林小徑', 'attraction')">
+                                <button class="detail-btn" onclick="showLocationDetail('嵐山竹林小徑', 'attraction', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <span class="quick-actions">
+                                    <button class="icon-btn-sm" onclick="fillTo('嵐山竹林小徑')" title="設為目的地"><i class="fas fa-location-dot"></i></button>
+                                    <button class="icon-btn-sm" onclick="addToFavorites('嵐山竹林小徑')" title="加入收藏"><i class="fas fa-heart"></i></button>
+                                </span>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">11:30</span>
+                                <span class="activity">嵯峨野トロッコ列車（預約）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('嵯峨野トロッコ列車', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
                             <div class="time-slot">
                                 <span class="time">12:30</span>
                                 <span class="activity">嵐山よしむら</span>
-                                <button class="detail-btn" onclick="showLocationDetail('嵐山よしむら', 'restaurant')">
+                                <button class="detail-btn" onclick="showLocationDetail('嵐山よしむら', 'restaurant', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
+                                <span class="quick-actions">
+                                    <button class="icon-btn-sm" onclick="fillTo('嵐山よしむら')" title="設為目的地"><i class="fas fa-location-dot"></i></button>
+                                    <button class="icon-btn-sm" onclick="addToFavorites('嵐山よしむら')" title="加入收藏"><i class="fas fa-heart"></i></button>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -676,7 +763,14 @@
                                 <span class="time">09:00</span>
                                 <span class="activity">平等院鳳凰堂參觀</span>
                                 <span class="note">世界遺產，光線最佳、人潮最少</span>
-                                <button class="detail-btn" onclick="showLocationDetail('平等院鳳凰堂', 'attraction')">
+                                <button class="detail-btn" onclick="showLocationDetail('平等院鳳凰堂', 'attraction', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">10:30</span>
+                                <span class="activity">宇治商店街散策（宇治橋通商店街）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('宇治商店街', 'shopping', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -684,7 +778,39 @@
                                 <span class="time">11:30</span>
                                 <span class="activity">午餐自由選擇</span>
                                 <span class="backup">中村藤吉、伊藤久右衛門、茶蕎麥麵</span>
-                                <button class="detail-btn" onclick="showLocationDetail('中村藤吉', 'restaurant')">
+                                <button class="detail-btn" onclick="showLocationDetail('中村藤吉', 'restaurant', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">13:00</span>
+                                <span class="activity">通圓茶舖 or 伊藤久右衛門（甜點）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('通圓茶舖', 'restaurant', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">14:30</span>
+                                <span class="activity">宇治神社、宇治上神社 參拜</span>
+                                <button class="detail-btn" onclick="showLocationDetail('宇治神社', 'attraction', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">15:30</span>
+                                <span class="activity">宇治川散策（黃昏風景最佳）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('宇治川', 'attraction', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">17:30</span>
+                                <span class="activity">返回大阪（JR宇治→京都→大阪→新今宮）</span>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">19:30</span>
+                                <span class="activity">晚餐：元祖串かつ だるま 新世界總本店（二度付け禁止）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('元祖串かつ だるま 新世界総本店', 'restaurant', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -701,15 +827,40 @@
                                 <span class="time">09:45</span>
                                 <span class="activity">大阪城、小車車</span>
                                 <span class="price">¥300/人，可坐一圈園區</span>
-                                <button class="detail-btn" onclick="showLocationDetail('大阪城', 'attraction')">
+                                <button class="detail-btn" onclick="showLocationDetail('大阪城', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
+                                <span class="quick-actions">
+                                    <button class="icon-btn-sm" onclick="fillTo('大阪城')" title="設為目的地"><i class="fas fa-location-dot"></i></button>
+                                    <button class="icon-btn-sm" onclick="addToFavorites('大阪城')" title="加入收藏"><i class="fas fa-heart"></i></button>
+                                </span>
                             </div>
                             <div class="time-slot">
                                 <span class="time">12:00</span>
                                 <span class="activity">黑門市場午餐 & 逛街</span>
                                 <span class="transport">地鐵長堀鶴見綠地線至心齋橋站，步行10分鐘</span>
-                                <button class="detail-btn" onclick="showLocationDetail('黑門市場', 'shopping')">
+                                <button class="detail-btn" onclick="showLocationDetail('黑門市場', 'shopping', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">16:00</span>
+                                <span class="activity">下午茶／甜點：Gram 厚鬆餅、嵐山茶屋（心齋橋／四ツ橋）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('Gram 厚鬆餅', 'restaurant', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">17:30</span>
+                                <span class="activity">晚餐：しゃぶしゃぶ豚々（吃到飽壽喜燒）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('しゃぶしゃぶ豚々', 'restaurant', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">20:00</span>
+                                <span class="activity">天王寺散步或通天閣夜景（備選）</span>
+                                <button class="detail-btn" onclick="showLocationDetail('通天閣', 'attraction', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -723,12 +874,43 @@
                         <h3>瘋狂購物日</h3>
                         <div class="schedule-details">
                             <div class="time-slot">
+                                <span class="time">09:00</span>
+                                <span class="activity">退房＆一樓免費寄放行李（AM 8:00 ~ PM 10:00）</span>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">09:30</span>
+                                <span class="activity">心齋橋筋／難波地下街／唐吉訶德／無印良品／GU／Loft 採購</span>
+                                <button class="detail-btn" onclick="showLocationDetail('心齋橋', 'shopping', this)">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">11:30</span>
+                                <span class="activity">午餐：炸牛排</span>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">13:00</span>
+                                <span class="activity">回 OASIS NANIWA 取行李</span>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">13:30</span>
+                                <span class="activity">新今宮出發（JR大阪環狀線 → JR關空快速）</span>
+                            </div>
+                            <div class="time-slot">
                                 <span class="time">14:30</span>
                                 <span class="activity">臨空城RP Outlet</span>
                                 <span class="note">可逛1.5小時，注意機場報到時間</span>
-                                <button class="detail-btn" onclick="showLocationDetail('臨空城Outlet', 'shopping')">
+                                <button class="detail-btn" onclick="showLocationDetail('臨空城Outlet', 'shopping', this)">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">16:10</span>
+                                <span class="activity">由 Outlet 步行至臨空城站 → 前往關西機場</span>
+                            </div>
+                            <div class="time-slot">
+                                <span class="time">16:30</span>
+                                <span class="activity">抵達關西機場（建議 17:50 前完成報到與托運）</span>
                             </div>
                         </div>
                     </div>
@@ -771,7 +953,6 @@
                     </div>
                     <h3>重要時間點</h3>
                     <ul>
-                        <li>7月：預定JR關西周遊券</li>
                         <li>7月：預定貴桑桑燒肉</li>
                         <li>提前3-6個月：預定住宿</li>
                         <li>提前2-3個月：預定環球影城門票</li>

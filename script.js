@@ -246,9 +246,20 @@ function handleBooking(bookingName, platform) {
 
 // 開啟Google地圖
 function openGoogleMaps(location) {
+    // 與進階版一致的覆寫（僅針對必要地點）
+    const overrides = {
+        '貴桑桑燒肉': {
+            placeName: '焼肉 鬼に金棒 梅田 茶屋町店',
+            placeUrl: 'https://www.google.com/maps/place/%E7%84%BC%E8%82%89+%E9%AC%BC%E3%81%AB%E9%87%91%E6%A3%92+%E6%A2%85%E7%94%B0+%E8%8C%B6%E5%B1%8B%E7%94%BA%E5%BA%97/@34.7069044,135.4955158,17z/data=!4m10!1m2!2m1!1z44Ob44Or44Oi44Oz6YWS5aC044CA6ay844Gr6YeR5qOS44CA5qKF55Sw44CA6Iqd55Sw5bqX!3m6!1s0x6000e73eb39f0de1:0x6f79321e6783974c!8m2!3d34.7076506!4d135.498694!15sCjbjg5vjg6vjg6Ljg7PphZLloLTjgIDprLzjgavph5Hmo5LjgIDmooXnlLDjgIDoip3nlLDlupdaNiI044Ob44Or44Oi44OzIOmFkuWgtCDprLwg44GrIOmHkeajkiDmooXnlLAg6Iqd55SwIOW6l5IBE3lha2luaWt1X3Jlc3RhdXJhbnSqAaYBCg0vZy8xMXN4d3RmdGtfEAEqOCI044Ob44Or44Oi44OzIOmFkuWgtCDprLwg44GrIOmHkeajkiDmooXnlLAg6Iqd55SwIOW6lygIMh8QASIbSFbsXvHuvMgh3rgD5ezU_yyLppjRXhTF8Sf6MjgQAiI044Ob44Or44Oi44OzIOmFkuWgtCDprLwg44GrIOmHkeajkiDmooXnlLAg6Iqd55SwIOW6l-ABAA!16s%2Fg%2F11sj7xmwds?entry=ttu&g_ep=EgoyMDI1MDgwNi4wIKXMDSoASAFQAw%3D%3D'
+        }
+    };
+    const ov = overrides[location];
+    if (ov?.placeUrl) {
+        window.open(ov.placeUrl, '_blank');
+        return;
+    }
     const encodedLocation = encodeURIComponent(location);
-    const mapUrl = `https://www.google.com/maps/search/${encodedLocation}`;
-    window.open(mapUrl, '_blank');
+    window.open(`https://www.google.com/maps/search/${encodedLocation}` , '_blank');
 }
 
 // 進度條動畫
