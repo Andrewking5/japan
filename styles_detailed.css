@@ -969,3 +969,48 @@ body {
         padding: 10px;
     }
 }
+
+/* --- Dark mode overrides (ensure no white sections) --- */
+.dark-mode body {
+    background: #0f172a !important;
+    color: #e5e7eb;
+}
+.dark-mode .section {
+    background: #0b1220 !important;
+}
+.dark-mode .section:nth-child(even) {
+    background: #0d1526 !important;
+}
+.dark-mode .section-title {
+    color: #e5e7eb;
+}
+.dark-mode .overview-card,
+.dark-mode .tip-card,
+.dark-mode .booking-card,
+.dark-mode .timeline-content,
+.dark-mode .modal-content {
+    background: #111827 !important;
+    color: #e5e7eb;
+    border-color: #1f2937;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.dark-mode .overview-card h3,
+.dark-mode .tip-card h3,
+.dark-mode .timeline-content h3 {
+    color: #e5e7eb;
+    border-color: #1f2937;
+}
+.dark-mode .tip-card ul li {
+    border-bottom-color: #1f2937;
+    color: #cbd5e1;
+}
+.dark-mode .time-slot {
+    background: #0f172a !important;
+    border-left-color: #60a5fa !important;
+}
+.dark-mode .time-slot .activity {
+    color: #e5e7eb;
+}
+.dark-mode .provider-row .provider-name {
+    color: #e5e7eb;
+}
